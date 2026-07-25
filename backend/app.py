@@ -1,83 +1,90 @@
-import functions
-import numpy as np
-import pandas as pd
+from flask import Flask
 import joblib
-from pathlib import Path
-import streamlit as st
-BASE_DIR = Path("Heart attack and diseases model").resolve().parent
-scaler_path = BASE_DIR / "NN_scaler.joblib"
-scaler = joblib.load(scaler_path)
-NN_model_path = BASE_DIR / "NN_model.joblib"
-NN_model = joblib.load(NN_model_path)
-rf_model_path = BASE_DIR / "random_forest_model.joblib"
-rf_model = joblib.load(rf_model_path)
-rf_scaler_path = BASE_DIR / "random_forest_scaler.joblib"
-rf_scaler = joblib.load(rf_scaler_path)
+import pathlib
+from  models_files.utils import *
+BASE_DIR = pathlib.Path(__file__).resolve().parent / "saved model"
+heart_model = joblib.load(BASE_DIR / "heart model.joblib")
+heart_scaler = joblib.load(BASE_DIR / "heart_scaler.joblib")
+kidney_model = joblib.load(BASE_DIR / "kidney model.joblib")
+kidney_scaler = joblib.load(BASE_DIR / "kidney_scaler.joblib")
+liver_model = joblib.load(BASE_DIR / "liver model.joblib")
+liver_scaler = joblib.load(BASE_DIR / "liver_scaler.joblib")
+sroke_model = joblib.load(BASE_DIR / "stroke model.joblib")
+stroke_scaler = joblib.load(BASE_DIR / "stoke_scaler.joblib")
+diabetes_model = joblib.load(BASE_DIR / "diabetes model.joblib")
+diabetes_scaler = joblib.load(BASE_DIR / "diabetes_scaler.joblib")
+anemia_model = joblib.load(BASE_DIR / "anemia model.joblib")
+anemia_encoder = joblib.load(BASE_DIR / "anemia_encoder.joblib")
+anemia_scaler = joblib.load(BASE_DIR / "anemia_scaler.joblib")
+HEART_COLUMNS = [
+    "age", "gender", "glucose_mg_dl", "cholesterol_mg_dl", "systolic_bp",
+    "diastolic_bp", "heart_rate", "alcohol_consumption", "smoking_status",
+    "bmi", "physical_activity", "family_history", "MAP",
+    "RPP Rate Pressure Product", "PP Pulse Pressure", "unhealthy_lifestyle_score",
+    "Atherogenic Index Coefficient", "Smoking-Hypertension Interaction",
+    "Cardiac Adiposity Proxy", "Cardiovascular Stress Index"
+]
+ANEMIA_COLUMNS = [
+    "WBC", "LYMp", "NEUTp", "LYMn", "NEUTn", "RBC", "HGB", "HCT",
+    "MCV", "MCH", "MCHC", "PLT", "PDW", "PCT"
+]
+STROKE_COLUMNS = [
+    "gender", "age", "hypertension", "heart_disease", "ever_married",
+    "work_type", "Residence_type", "avg_glucose_level", "bmi", "smoking_status"
+]
+KIDNEY_COLUMNS = [
+    "Age of the patient", "Blood pressure (mm/Hg)", "Specific gravity of urine",
+    "Albumin in urine", "Sugar in urine", "Red blood cells in urine",
+    "Pus cells in urine", "Pus cell clumps in urine", "Bacteria in urine",
+    "Random blood glucose level (mg/dl)", "Blood urea (mg/dl)",
+    "Serum creatinine (mg/dl)", "Sodium level (mEq/L)", "Potassium level (mEq/L)",
+    "Hemoglobin level (gms)", "Packed cell volume (%)",
+    "White blood cell count (cells/cumm)", "Red blood cell count (millions/cumm)",
+    "Hypertension (yes/no)", "Diabetes mellitus (yes/no)",
+    "Coronary artery disease (yes/no)", "Appetite (good/poor)",
+    "Pedal edema (yes/no)", "Anemia (yes/no)",
+    "Estimated Glomerular Filtration Rate (eGFR)",
+    "Urine protein-to-creatinine ratio", "Urine output (ml/day)",
+    "Serum albumin level", "Cholesterol level",
+    "Parathyroid hormone (PTH) level", "Serum calcium level",
+    "Serum phosphate level", "Family history of chronic kidney disease",
+    "Smoking status", "Body Mass Index (BMI)", "Physical activity level",
+    "Duration of diabetes mellitus (years)", "Duration of hypertension (years)",
+    "Cystatin C level", "Urinary sediment microscopy results",
+    "C-reactive protein (CRP) level", "Interleukin-6 (IL-6) level"
+]
+DIABETES_COLUMNS = [
+    "gender", "age", "hypertension", "heart_disease", "smoking_history",
+    "bmi", "HbA1c_level", "blood_glucose_level"
+]
+LIVER_COLUMNS = [
+    "age", "gender", "tot_bilirubin", "direct_bilirubin", "tot_proteins",
+    "albumin", "ag_ratio", "sgpt", "sgot", "alkphos"
+]
+reverse_risk_mapping = {  # that for kidney output
+    0: "Low Risk (No Disease / Low Risk)",
+    1: "Moderate Risk",
+    2: "High Risk (High Risk / Severe Disease)",
+}
+ 
+app = Flask(__name__, static_folder="frontend", static_url_path="/frontend")
 
-st.title("Heart Attack and Disease Risk Predictor")
-st.write("Enter your health information below to check your risk of heart disease.")
-age = st.number_input("Age", min_value=1, max_value=120, value=30)
-gender = st.selectbox("Gender", options=[("Male", 1), ("Female", 0)], format_func=lambda x: x[0])[1]
-glucose_mg_dl = st.number_input("Glucose level (mg/dL)", min_value=0.0, value=90.0)
-cholesterol_mg_dl = st.number_input("Cholesterol level (mg/dL)", min_value=0.0, value=180.0)
-systolic_bp = st.number_input("systolic blood pressure (mmHg)", min_value=0.0, value=80.0)
-diastolic_bp = st.number_input("Diastolic blood pressure (mmHg)", min_value=0.0, value=80.0)
-bmi = st.number_input("BMI", min_value=0.0, value=22.0)
-heart_rate = st.number_input("Heart rate (bpm)", min_value=0.0, value=70.0)
-smoking_status = st.selectbox("Smoking status", options=[("Smoker", 1), ("Non-Smoker", 0)], format_func=lambda x: x[0])[1]
-alcohol_consumption = st.selectbox("Alcohol consumption", options=[("Yes", 1), ("No", 0)], format_func=lambda x: x[0])[1]
-physical_activity = st.selectbox("Physical activity level", options=[("High", 2), ("Medium", 1), ("Low", 0)], format_func=lambda x: x[0])[1]
-family_history = st.selectbox("Family history of heart disease", options=[("Yes", 1), ("No", 0)], format_func=lambda x: x[0])[1]
-if st.button("Predict"):
-    Map = functions.MAP(systolic_bp, diastolic_bp)
-    Rpp = functions.RPP(systolic_bp, heart_rate)
-    Pp = functions.PP(systolic_bp, diastolic_bp)
-    unhealthy_lifestyle_score = functions.UnhealthyLifeScore(smoking_status, alcohol_consumption, physical_activity)
-    atherogenic_index_coefficient = functions.AtherogenicIndexCoefficient(cholesterol_mg_dl, systolic_bp)
-    smoking_hypertension_interaction = functions.SmokingHypertensionInteraction(smoking_status, systolic_bp)
-    cardiac_adiposity_proxy = functions.CardiacAdiposityProxy(bmi, heart_rate)
-    cardiovascular_stress_index = functions.CardiovascularStressIndex(Map, heart_rate)
-    columns = [
-    'age', 'gender', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp',
-    'diastolic_bp', 'heart_rate', 'alcohol_consumption', 'smoking_status',
-    'bmi', 'physical_activity', 'family_history', 'MAP',
-    'RPP Rate Pressure Product', 'PP Pulse Pressure', 'unhealthy_lifestyle_score',
-    'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction',
-    'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index'
-    ]
-    values = [age, gender, glucose_mg_dl, cholesterol_mg_dl, systolic_bp,
-          diastolic_bp, heart_rate, alcohol_consumption, smoking_status,
-          bmi, physical_activity, family_history, Map, Rpp, Pp,
-          unhealthy_lifestyle_score, atherogenic_index_coefficient,
-          smoking_hypertension_interaction, cardiac_adiposity_proxy,
-          cardiovascular_stress_index]
-    input_df = pd.DataFrame([values], columns=columns)
-    unimportant_cols = ['gender', 'alcohol_consumption', 'heart_rate']
-    scale_cols = ['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp',
-              'diastolic_bp', 'bmi', 'MAP',
-              'RPP Rate Pressure Product', 'PP Pulse Pressure',
-              'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction',
-              'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']
-    nn_scaled_input = scaler.transform(input_df[scale_cols])         
-    nn_nonscaled_input = input_df.drop(columns=scale_cols + unimportant_cols).values   
-    nn_input_final = np.concatenate((nn_scaled_input, nn_nonscaled_input), axis=1) 
-   
-    mapping = {"low":0 ,"medium":1 ,"high":2}
-    input_df["physical_activity"] = input_df["physical_activity"].map(mapping)
-    rf_input = pd.get_dummies(input_df, columns=["physical_activity"])
-    rf_scaled_input = scaler.transform(rf_input[scale_cols])
-    rf_nonscaled_input = rf_input.drop(columns=scale_cols + unimportant_cols).values
-    rf_input_final = np.concatenate((rf_scaled_input, rf_nonscaled_input), axis=1)
+@app.route("/api/predict/heart", methods=["POST"])
 
 
-    output_rf = rf_model.predict(rf_input_final)
-    output_NN = NN_model.predict(nn_input_final)
-    st.subheader("Results")
-    if output_NN[0][0] > 0.5:
-       st.error("Neural Network: High risk of heart disease.")
-    else:
-       st.success("Neural Network: Low risk of heart disease.")
-    if output_rf[0] > 0.5:
-       st.error("Random Forest: High risk of heart disease.")
-    else:
-       st.success("Random Forest: Low risk of heart disease.")
+
+@app.route("/api/predict/kidney", method=["Post"])
+
+
+
+@app.route("/api/predict/anemia", methods=["Post"])
+
+
+@app.route("/api/predict/diabetes", methods=["Post"])
+
+
+@app.route("/api/predict/stroke", methods=["Post"])
+
+
+@app.route("/api/predict/liver", methods=["Post"])
+
