@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import joblib
-import pathlib as Path
+import pathlib 
 from tensorflow.keras.layers import Input, Dense, Dropout
 from tensorflow.keras.losses import MeanSquaredError ,BinaryCrossentropy
 from tensorflow.keras.models import Sequential
@@ -55,19 +55,6 @@ def replace_values_in_csv(df ,column_name ,value_0 ,value_1 ,value_2):
         df[column_name] = df[column_name].replace({value_0:0 ,value_1: 1,value_2: 2}).astype(int)
     return df[column_name]
 
-def prepare_input(values: dict, feature_order: list):
-    """
-    values:        dict جاي من الفرونت إند، keys = أسماء الأعمدة
-    feature_order: ليستة بترتيب الأعمدة بالظبط زي وقت التدريب (X.columns)
-
-    بترجع: numpy array بشكل (1, n_features) جاهز يدخل على الـ scaler/model
-    """
-    try:
-        row = [float(values[col]) for col in feature_order]
-    except KeyError as missing:
-        raise ValueError(f"Missing required field: {missing}") from missing
-
-    return np.array([row])
 
 def MAP(systolic_bp ,diastolic_bp):
     return  float(diastolic_bp) + (1/3) * (float(systolic_bp) - float(diastolic_bp))
@@ -105,4 +92,77 @@ def CardiacAdiposityProxy(bmi ,heart_rate):
 
 def CardiovascularStressIndex(map ,heart_rate):
     return float(map) * float(heart_rate)
+
+def riskscore_messege(risk_score):
+    message = None
+    recommendation = None
+    if risk_score >= 80:
+        message = "The indicators suggest a very high risk."
+        recommendation = "Please consult a specialist immediately and get confirmatory tests."
+    elif risk_score >= 66:
+        message = "The indicators suggest a high risk."
+        recommendation = "The Medical Consultation is recommended as soon as possible."
+    elif risk_score >= 50:
+        message = "The indicators suggest a moderate-to-high risk."
+        recommendation = "Close medical follow-up and a repeat test soon are recommended."
+    elif risk_score >= 33:
+        message = "The indicators suggest a moderate risk."
+        recommendation = "Routine follow-up and lifestyle adjustments are recommended."
+    elif risk_score >= 15:
+        message = "The indicators suggest a low risk."
+        recommendation = "Continue with routine monitoring."
+    else:
+        message = "The values fall within the normal range."
+        recommendation = "No further action needed at this time; annual routine checkup is sufficient."
+    return message ,recommendation
+HEART_COLUMNS = [
+    "age", "gender", "glucose_mg_dl", "cholesterol_mg_dl", "systolic_bp",
+    "diastolic_bp", "heart_rate", "alcohol_consumption", "smoking",
+    "bmi", "physical_activity", "family_history", "MAP",
+    "RPP Rate Pressure Product", "PP Pulse Pressure", "unhealthy_lifestyle_score",
+    "Atherogenic Index Coefficient", "Smoking-Hypertension Interaction",
+    "Cardiac Adiposity Proxy", "Cardiovascular Stress Index"
+]
+ANEMIA_COLUMNS = [
+    "WBC", "LYMp", "NEUTp", "LYMn", "NEUTn", "RBC", "HGB", "HCT",
+    "MCV", "MCH", "MCHC", "PLT", "PDW", "PCT"
+]
+STROKE_COLUMNS = [
+    "gender", "age", "hypertension", "heart_disease", "ever_married",
+    "work_type", "Residence_type", "avg_glucose_level", "bmi", "smoking_status"
+]
+KIDNEY_COLUMNS = [
+    "Age of the patient", "Blood pressure (mm/Hg)", "Specific gravity of urine",
+    "Albumin in urine", "Sugar in urine", "Red blood cells in urine",
+    "Pus cells in urine", "Pus cell clumps in urine", "Bacteria in urine",
+    "Random blood glucose level (mg/dl)", "Blood urea (mg/dl)",
+    "Serum creatinine (mg/dl)", "Sodium level (mEq/L)", "Potassium level (mEq/L)",
+    "Hemoglobin level (gms)", "Packed cell volume (%)",
+    "White blood cell count (cells/cumm)", "Red blood cell count (millions/cumm)",
+    "Hypertension (yes/no)", "Diabetes mellitus (yes/no)",
+    "Coronary artery disease (yes/no)", "Appetite (good/poor)",
+    "Pedal edema (yes/no)", "Anemia (yes/no)",
+    "Estimated Glomerular Filtration Rate (eGFR)",
+    "Urine protein-to-creatinine ratio", "Urine output (ml/day)",
+    "Serum albumin level", "Cholesterol level",
+    "Parathyroid hormone (PTH) level", "Serum calcium level",
+    "Serum phosphate level", "Family history of chronic kidney disease",
+    "Smoking status", "Body Mass Index (BMI)", "Physical activity level",
+    "Duration of diabetes mellitus (years)", "Duration of hypertension (years)",
+    "Cystatin C level", "Urinary sediment microscopy results",
+    "C-reactive protein (CRP) level", "Interleukin-6 (IL-6) level"
+]
+DIABETES_COLUMNS = [
+    "gender", "age", "hypertension", "heart_disease", "smoking_history",
+    "bmi", "HbA1c_level", "blood_glucose_level"
+]
+LIVER_COLUMNS = [
+    "age", "gender", "tot_bilirubin", "direct_bilirubin", "tot_proteins",
+    "albumin", "ag_ratio", "sgpt", "sgot", "alkphos"
+]
+reverse_risk_mapping = {  # that for kidney output
+    0: "Low Risk (No Disease / Low Risk)",
+    1: "Moderate Risk",
+    2: "High Risk (High Risk / Severe Disease)",
+}
     

@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask ,request ,jsonify ,render_template
 import joblib
-import pathlib
+import pathlib 
 from  models_files.utils import *
+from sklearn.preprocessing import StandardScaler
 BASE_DIR = pathlib.Path(__file__).resolve().parent / "saved model"
 heart_model = joblib.load(BASE_DIR / "heart model.joblib")
 heart_scaler = joblib.load(BASE_DIR / "heart_scaler.joblib")
@@ -16,75 +17,120 @@ diabetes_scaler = joblib.load(BASE_DIR / "diabetes_scaler.joblib")
 anemia_model = joblib.load(BASE_DIR / "anemia model.joblib")
 anemia_encoder = joblib.load(BASE_DIR / "anemia_encoder.joblib")
 anemia_scaler = joblib.load(BASE_DIR / "anemia_scaler.joblib")
-HEART_COLUMNS = [
-    "age", "gender", "glucose_mg_dl", "cholesterol_mg_dl", "systolic_bp",
-    "diastolic_bp", "heart_rate", "alcohol_consumption", "smoking_status",
-    "bmi", "physical_activity", "family_history", "MAP",
-    "RPP Rate Pressure Product", "PP Pulse Pressure", "unhealthy_lifestyle_score",
-    "Atherogenic Index Coefficient", "Smoking-Hypertension Interaction",
-    "Cardiac Adiposity Proxy", "Cardiovascular Stress Index"
-]
-ANEMIA_COLUMNS = [
-    "WBC", "LYMp", "NEUTp", "LYMn", "NEUTn", "RBC", "HGB", "HCT",
-    "MCV", "MCH", "MCHC", "PLT", "PDW", "PCT"
-]
-STROKE_COLUMNS = [
-    "gender", "age", "hypertension", "heart_disease", "ever_married",
-    "work_type", "Residence_type", "avg_glucose_level", "bmi", "smoking_status"
-]
-KIDNEY_COLUMNS = [
-    "Age of the patient", "Blood pressure (mm/Hg)", "Specific gravity of urine",
-    "Albumin in urine", "Sugar in urine", "Red blood cells in urine",
-    "Pus cells in urine", "Pus cell clumps in urine", "Bacteria in urine",
-    "Random blood glucose level (mg/dl)", "Blood urea (mg/dl)",
-    "Serum creatinine (mg/dl)", "Sodium level (mEq/L)", "Potassium level (mEq/L)",
-    "Hemoglobin level (gms)", "Packed cell volume (%)",
-    "White blood cell count (cells/cumm)", "Red blood cell count (millions/cumm)",
-    "Hypertension (yes/no)", "Diabetes mellitus (yes/no)",
-    "Coronary artery disease (yes/no)", "Appetite (good/poor)",
-    "Pedal edema (yes/no)", "Anemia (yes/no)",
-    "Estimated Glomerular Filtration Rate (eGFR)",
-    "Urine protein-to-creatinine ratio", "Urine output (ml/day)",
-    "Serum albumin level", "Cholesterol level",
-    "Parathyroid hormone (PTH) level", "Serum calcium level",
-    "Serum phosphate level", "Family history of chronic kidney disease",
-    "Smoking status", "Body Mass Index (BMI)", "Physical activity level",
-    "Duration of diabetes mellitus (years)", "Duration of hypertension (years)",
-    "Cystatin C level", "Urinary sediment microscopy results",
-    "C-reactive protein (CRP) level", "Interleukin-6 (IL-6) level"
-]
-DIABETES_COLUMNS = [
-    "gender", "age", "hypertension", "heart_disease", "smoking_history",
-    "bmi", "HbA1c_level", "blood_glucose_level"
-]
-LIVER_COLUMNS = [
-    "age", "gender", "tot_bilirubin", "direct_bilirubin", "tot_proteins",
-    "albumin", "ag_ratio", "sgpt", "sgot", "alkphos"
-]
-reverse_risk_mapping = {  # that for kidney output
-    0: "Low Risk (No Disease / Low Risk)",
-    1: "Moderate Risk",
-    2: "High Risk (High Risk / Severe Disease)",
-}
- 
-app = Flask(__name__, static_folder="frontend", static_url_path="/frontend")
 
+BASE_DIR_FLASK = pathlib.Path(__file__).resolve().parent  
+FRONTEND_DIR = BASE_DIR_FLASK.parent / "frontend"                
+app = Flask(
+    __name__,
+    template_folder=str(FRONTEND_DIR),  
+    static_folder=str(FRONTEND_DIR),      
+    static_url_path="/static"
+)
+@app.route("/") 
+def index():
+    return render_template("index.html")
 @app.route("/api/predict/heart", methods=["POST"])
+def heart_prediction():
+    values = request.get_json(silent=True) or {}
+    systolic_bp = float(values["systolic_bp"])
+    diastolic_bp = float(values["diastolic_bp"])
+    heart_rate = float(values["heart_rate"])
+    cholesterol_mg_dl = float(values["cholesterol_mg_dl"])
+    smoking_status = float(values["smoking"])
+    alcohol_consumption = float(values["alcohol_consumption"])
+    physical_activity = float(values["physical_activity"])
+    bmi = float(values["bmi"])
+    Map = MAP(systolic_bp ,diastolic_bp)
+    Rpp = RPP(systolic_bp ,heart_rate)
+    Pp = PP(systolic_bp ,diastolic_bp)
+    unhealthy_lifestyle_score = UnhealthyLifeScore(smoking_status ,alcohol_consumption ,physical_activity)
+    atherogenic_index_coefficient = AtherogenicIndexCoefficient(cholesterol_mg_dl ,systolic_bp)
+    smoking_hypertension_interaction = SmokingHypertensionInteraction(smoking_status ,systolic_bp)
+    cardiac_adiposity_proxy = CardiacAdiposityProxy(bmi ,heart_rate)
+    cardiovascular_stress_index = CardiovascularStressIndex(Map ,heart_rate)
+
+    full_values = dict(values)
+    full_values.update({
+            "MAP": Map,
+            "RPP Rate Pressure Product": Rpp,
+            "PP Pulse Pressure": Pp,
+            "unhealthy_lifestyle_score": unhealthy_lifestyle_score,
+            "Atherogenic Index Coefficient": atherogenic_index_coefficient,
+            "Smoking-Hypertension Interaction": smoking_hypertension_interaction,
+            "Cardiac Adiposity Proxy": cardiac_adiposity_proxy,
+            "Cardiovascular Stress Index": cardiovascular_stress_index,
+        })
+    cols = HEART_COLUMNS
+    orderd_row = []
+    for col in cols:
+        if col not in full_values:
+            raise ValueError(f"Missing value for : {col}")
+        orderd_row.append(float(full_values[col]))
+    input = pd.DataFrame([orderd_row] ,columns=cols)
+    scale_cols = ['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp',
+              'diastolic_bp', 'bmi', 'MAP',
+              'RPP Rate Pressure Product', 'PP Pulse Pressure',
+              'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction',
+              'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index'
+
+               ]
+    unimportant_cols = ['gender' ,'alcohol_consumption' ,'heart_rate']
+    final_input = scalingfortest(input ,scale_cols ,heart_scaler ,unimportant_cols)
+    proba = float(heart_model.predict(final_input)[0][0])
+    risk_score = proba * 100
+    confidence_pct = round((proba if proba >= 0.5 else (1 - proba)) * 100, 1)                
+    message ,recommendation = riskscore_messege(risk_score)
+    if risk_score >= 66:
+        level, level_text = "high", "High Risk"
+    elif risk_score >= 33:
+        level, level_text = "moderate", "Moderate Risk"
+    else:
+        level, level_text = "low", "Low Risk"
+
+    return jsonify({
+        "riskScore": round(risk_score, 1),
+        "level": level,
+        "levelText": level_text,
+        "detail": message,
+        "message": message,
+        "recommendation": recommendation,
+        "confidencePct": confidence_pct,
+        "predictedLabel": None,
+    })
+'''
+@app.route("/api/predict/kidney", methods=["POST"])
+def kidney_prediction():
+    values = request.get_json(silent=True) or {}
+    cols = KIDNEY_COLUMNS
+    ordered_row = []
+    for col in cols:
+        if col not in values:
+            raise ValueError(f"Missing value for : {col}")
+        ordered_row.append(values[col])
+    input = np.array([ordered_row])
+
+
+@app.route("/api/predict/anemia", methods=["POST"])
+def anemia_prediction():
+    values = request.get_json(silent=True) or {}
+
+
+@app.route("/api/predict/diabetes", methods=["POST"])
+def diabetes_prediction():
 
 
 
-@app.route("/api/predict/kidney", method=["Post"])
+@app.route("/api/predict/stroke", methods=["POST"])
 
 
 
-@app.route("/api/predict/anemia", methods=["Post"])
+
+@app.route("/api/predict/liver", methods=["POST"])
+'''
 
 
-@app.route("/api/predict/diabetes", methods=["Post"])
-
-
-@app.route("/api/predict/stroke", methods=["Post"])
-
-
-@app.route("/api/predict/liver", methods=["Post"])
-
+'''
+cd backend
+$env:FLASK_APP = "app.py"
+flask run
+'''

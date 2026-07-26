@@ -279,20 +279,22 @@ async function runModel(model){
       throw new Error(errBody.error || `Request failed (${res.status})`);
     }
 
-    const { riskScore, level, levelText, detail, predictedLabel } = await res.json();
+    const { riskScore, level, levelText, detail, predictedLabel, message, recommendation, confidencePct } = await res.json();
 
     readout.className = `readout show level-${level}`;
     readout.innerHTML = `
       <div class="rd-left">
-        <div class="rd-label">${model.label} — Model Output</div>
-        <p class="rd-level">${predictedLabel ? predictedLabel : levelText}</p>
-        ${predictedLabel ? `<p class="rd-badge">${levelText}</p>` : ''}
-        <p class="rd-detail">${detail}</p>
+         <div class="rd-label">${model.label} — Model Output</div>
+         <p class="rd-level">${predictedLabel ? predictedLabel : levelText}</p>
+         ${predictedLabel ? `<p class="rd-badge">${levelText}</p>` : ''}
+         <p class="rd-detail">${message || detail}</p>
+         ${recommendation ? `<p class="rd-detail"><strong>Recommendation:</strong> ${recommendation}</p>` : ''}
+         ${confidencePct ? `<p class="rd-detail" style="opacity:0.7; font-size:0.9em;">Model confidence: ${confidencePct}%</p>` : ''}
       </div>
       <div class="gauge">
-        <div class="score">${Math.round(riskScore)}</div>
-        <div class="of">/ 100</div>
-        ${gaugeSvg(riskScore, level)}
+         <div class="score">${Math.round(riskScore)}</div>
+         <div class="of">/ 100</div>
+         ${gaugeSvg(riskScore, level)}
       </div>
     `;
   } catch(err){
