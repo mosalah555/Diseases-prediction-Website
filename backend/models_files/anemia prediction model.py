@@ -73,3 +73,4 @@ model_path = BASE_DIR   / "saved model" / "anemia model.joblib"
 joblib.dump(model ,model_path)
 joblib.dump(scaler ,BASE_DIR / "saved model" / "anemia_scaler.joblib")
 joblib.dump(label_encoder ,BASE_DIR / "saved model" / "anemia_encoder.joblib")
+

@@ -115,6 +115,17 @@ def riskscore_messege(risk_score):
         message = "The values fall within the normal range."
         recommendation = "No further action needed at this time; annual routine checkup is sufficient."
     return message ,recommendation
+
+def leveltext_predict(risk_score):
+    if risk_score >= 66:
+        level, level_text = "high", "High Risk"
+    elif risk_score >= 30:
+        level, level_text = "moderate", "Moderate Risk"
+    elif risk_score >= 15:
+        level, level_text = "low", "Low Risk"
+    else:
+        level, level_text = "Normal", "Normal precentage"
+    return level ,level_text
 HEART_COLUMNS = [
     "age", "gender", "glucose_mg_dl", "cholesterol_mg_dl", "systolic_bp",
     "diastolic_bp", "heart_rate", "alcohol_consumption", "smoking",

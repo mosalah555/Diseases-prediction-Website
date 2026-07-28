@@ -287,7 +287,8 @@ async function runModel(model){
          <div class="rd-label">${model.label} — Model Output</div>
          <p class="rd-level">${predictedLabel ? predictedLabel : levelText}</p>
          ${predictedLabel ? `<p class="rd-badge">${levelText}</p>` : ''}
-         <p class="rd-detail">${message || detail}</p>
+         <p class="rd-detail">${message || levelText}</p>
+         ${detail ? `<p class="rd-detail" style="opacity:0.8;">${detail}</p>` : ''}
          ${recommendation ? `<p class="rd-detail"><strong>Recommendation:</strong> ${recommendation}</p>` : ''}
          ${confidencePct ? `<p class="rd-detail" style="opacity:0.7; font-size:0.9em;">Model confidence: ${confidencePct}%</p>` : ''}
       </div>

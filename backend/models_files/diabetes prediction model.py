@@ -24,7 +24,7 @@ values ={
 
 df = pd.read_csv("C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Diseases prediction model\\backend\\dataset\\diabetes_prediction_dataset.csv")
 
-df['gander'] = replace_values_in_csv(df ,'gender' ,"Female" ,"Male" ,"Other")
+df['gender'] = replace_values_in_csv(df ,'gender' ,"Female" ,"Male" ,"Other")
 df['smoking_history'] = df['smoking_history'].replace(values).astype(int)
 
 X = df.drop(columns=['diabetes'])
@@ -75,7 +75,8 @@ print(f"Test Accuracy: {test_accuracy:.4f}")
 print(f"Test Recall: {test_recall:.4f}")
 
 
-BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent
-model_path = BASE_DIR / "Diseases prediction model" / "backend" / "saved model" / "diabetes model.joblib"
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent / "saved model"
+model_path = BASE_DIR / "diabetes model.joblib"
 joblib.dump(model , model_path)
-joblib.dump(scaler , BASE_DIR / "Diseases prediction model" / "backend"/ "saved model" / "diabetes_scaler.joblib")
+joblib.dump(scaler , BASE_DIR / "diabetes_scaler.joblib")
+print(f"Model saved successfully to {model_path}")
