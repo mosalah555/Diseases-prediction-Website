@@ -37,7 +37,7 @@ const MODELS = [
       {id:'bmi', column:'bmi', label:'BMI', unit:'kg/m²', type:'number', placeholder:'28.5', step:'0.1', sample:28.5},
       {id:'physical_activity', column:'physical_activity', label:'Physical Activity', type:'select', options:[['0','Low'],['1','Moderate'],['2','High']], sample:'0'},
       {id:'family_history', column:'family_history', label:'Family History', type:'select', options:[['1','Yes'],['0','No']], sample:'1'},
-    ],
+    ], 
   },
   {
     id:'anemia',
