@@ -174,7 +174,7 @@ const MODELS = [
    2. RENDERING
    ============================================================ */
 
-let activeId = MODELS[0].id;
+let activeId =  MODELS[0].id;o
 
 const tabsEl = document.getElementById('tabs');
 const bodyEl = document.getElementById('chartBody');
