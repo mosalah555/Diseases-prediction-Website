@@ -37,8 +37,7 @@ chronic_scaler = joblib.load(BASE_DIR / "chronic_scaler.joblib")
 hyper_model = joblib.load(BASE_DIR / "hypertension model.joblib")
 hyper_scaler = joblib.load(BASE_DIR / "hypertension_scaler.joblib")
 #sarting the app settings with flask
-BASE_DIR = pathlib.Path(__file__).resolve().parent
-FRONTEND_DIR = BASE_DIR.parent / "frontend"
+FRONTEND_DIR = pathlib.Path(__file__).resolve().parent 
 
 app = Flask(
     __name__,
