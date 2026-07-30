@@ -26,13 +26,13 @@ final_x_train = scalingfortrain(x_train ,scaled_cols ,scaler ,None)
 final_x_val = scalingfortest(x_val ,scaled_cols ,scaler ,None)
 final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
 model = Sequential([
-    Dense(32 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l1'),
+    Dense(32 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l1'),
     Dropout(0.02),
-    Dense(16 ,input_shape=(32,) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l2'),
+    Dense(16 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l2'),
     Dropout(0.02),
-    Dense(8 ,input_shape=(16,) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l3'),
+    Dense(8 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l3'),
     Dropout(0.02),
-    Dense(1 ,input_shape=(8,) ,activation='sigmoid')
+    Dense(1 ,activation='sigmoid')
 ])
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
@@ -49,7 +49,7 @@ weights = dict(enumerate(weights))
 history = model.fit(
     final_x_train ,y_train ,
     validation_data=(final_x_val ,y_val),
-    epochs=250,
+    epochs=500,
     class_weight=weights,
     batch_size=64,
     callbacks=[early_stop],

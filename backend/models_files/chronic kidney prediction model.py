@@ -27,11 +27,15 @@ final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
 model = Sequential([
     Dense(13 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l1'),
     Dropout(0.02),
-    Dense(9 , activation='relu' ,kernel_regularizer=l2(0.01) ,name='l2'),
+    Dense(11 , activation='relu' ,kernel_regularizer=l2(0.01) ,name='l2'),
     Dropout(0.02),
-    Dense(5 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l3'),
+    Dense(7 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l3'),
     Dropout(0.02),
-    Dense(1 ,activation='sigmoid' ,name='l4')
+    Dense(5 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l4'),
+    Dropout(0.02),
+    Dense(3 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l5'),
+    Dropout(0.02),
+    Dense(1 ,activation='sigmoid' ,name='l6')
 ])
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),

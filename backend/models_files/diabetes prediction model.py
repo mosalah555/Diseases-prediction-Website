@@ -29,7 +29,7 @@ df['smoking_history'] = df['smoking_history'].replace(values).astype(int)
 
 X = df.drop(columns=['diabetes'])
 Y = df['diabetes']
-x_train ,x_val ,x_test ,y_train ,y_val ,y_test = data_splitting(X ,Y ,0.8 ,0.2 ,0.1 ,42)
+x_train ,x_val ,x_test ,y_train ,y_val ,y_test = data_splitting(X ,Y ,0.7 ,0.2 ,0.1 ,42)
 
 scaler = StandardScaler()
 scaled_cols = ['age' ,'smoking_history' ,'bmi' ,'HbA1c_level' ,'blood_glucose_level']
@@ -53,16 +53,16 @@ model.compile(
  )
 early_stop = EarlyStopping(
     monitor='val_loss',
-    patience=10 ,
+    patience=20,
     restore_best_weights=True
 )
 
-weights = compute_class_weight('balanced', classes=np.unique(Y), y=Y)
+weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
 weights = dict(enumerate(weights))
 history = model.fit(
     final_x_train ,y_train ,
     validation_data=(final_x_valid ,y_val),
-    epochs= 30,
+    epochs=500,
     class_weight=weights,
     batch_size=128 ,
     callbacks=[early_stop] ,

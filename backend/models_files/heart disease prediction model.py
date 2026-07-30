@@ -38,32 +38,32 @@ final_x_test = utils.scalingfortest(x_test , scaled_columns , scaler ,unimportan
 
 
 model = Sequential([
-    Dense(64, input_shape=(final_x_train.shape[1],), activation='relu' ,kernel_regularizer=l2(0.01)),
-    Dropout(0.1),
-    Dense(16, input_shape=(64,) , activation='relu' ,kernel_regularizer=l2(0.01)),
-    Dropout(0.1),
-    Dense(32, input_shape=(16,) ,activation='relu' ,kernel_regularizer=l2(0.01)),
-    Dropout(0.01),
-    Dense(8 ,input_shape=(32,) , activation='relu',kernel_regularizer=l2(0.01)),
-    Dropout(0.1),
-    Dense(1 ,input_shape=(8,), activation='sigmoid')
+    Dense(64 , activation='relu' ,kernel_regularizer=l2(0.01)),
+    Dropout(0.02),
+    Dense(32 , activation='relu' ,kernel_regularizer=l2(0.01)),
+    Dropout(0.02),
+    Dense(16 ,activation='relu' ,kernel_regularizer=l2(0.01)),
+    Dropout(0.02),
+    Dense(8 , activation='relu',kernel_regularizer=l2(0.01)),
+    Dropout(0.02),
+    Dense(1 , activation='sigmoid')
 ])
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
     loss=BinaryCrossentropy(from_logits=True), 
     metrics=['accuracy', tf.keras.metrics.Recall()] 
 )
 
 early_stop = EarlyStopping(
     monitor='val_loss',
-    patience=15,
+    patience=20,
     restore_best_weights=True
 )
 
 history = model.fit(
     final_x_train, y_train,
     validation_data=(final_x_val, y_valid),
-    epochs=130,       
+    epochs=500,       
     batch_size=4, 
     callbacks=[early_stop],     
     verbose=1
@@ -77,7 +77,7 @@ print(f"Test Recall: {test_recall:.4f}")
 
 
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent
-model_path = BASE_DIR / "Diseases prediction model" / "backend" /"saved model" / "heart model.joblib"
+model_path = BASE_DIR /"saved model" / "heart model.joblib"
 joblib.dump(model, model_path)
 print(f"the model has saved in: {model_path}")
-joblib.dump(scaler, BASE_DIR / "Diseases prediction model"/ "backend" / "saved model" / "heart_scaler.joblib")
+joblib.dump(scaler, BASE_DIR/ "saved model" / "heart_scaler.joblib")

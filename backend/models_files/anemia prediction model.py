@@ -33,14 +33,14 @@ final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
 model = Sequential([
     Dense(14 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l1'),
     Dropout(0.02),
-    Dense(12 ,input_shape=(14,) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l2'),
+    Dense(12 ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l2'),
     Dropout(0.02),
-    Dense(10 ,input_shape=(12,) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l3'),
-    Dropout(0.02),
-    Dense(9 ,input_shape=(10,) ,activation='softmax' ,name='l5')
+    #Dense(10 ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l3'),
+    #Dropout(0.02),
+    Dense(9 ,activation='softmax' ,name='l5')
 ])
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.005),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
     loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
     metrics=['accuracy' ,tf.keras.metrics.Recall()]
 )
@@ -49,13 +49,10 @@ early_stop = EarlyStopping(
     patience=30,
     restore_best_weights=True
 )
-weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
-weights = dict(enumerate(weights))
 history = model.fit(
     final_x_train ,y_train,
     validation_data=(final_x_val ,y_val),
     epochs=750,
-    class_weight=weights,
     batch_size=64,
     callbacks=[early_stop],
     verbose=2

@@ -42,13 +42,13 @@ final_x_val = scalingfortest(x_val ,scaled_cols ,scaler ,None)
 final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
  
 model = Sequential([
-    Dense(10 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l1'),
+    Dense(10 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l1'),
     Dropout(0.02),
-    Dense(8 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l2'),
+    Dense(8 ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l2'),
     Dropout(0.02),
-    Dense(6 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l3'),
+    Dense(6 ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l3'),
     Dropout(0.02),
-    Dense(4 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l4'),
+    Dense(4 ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l4'),
     Dropout(0.02),
     Dense(1 ,activation='sigmoid' ,name='l5')
 ])
@@ -67,7 +67,7 @@ weights = dict(enumerate(weights))
 history = model.fit(
     final_x_train ,y_train ,
     validation_data=(final_x_val ,y_val),
-    epochs=250,
+    epochs=500,
     class_weight=weights,
     batch_size=32,
     callbacks=[early_stop],

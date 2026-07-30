@@ -82,14 +82,14 @@ model.compile(
 
 early_stop = EarlyStopping(
     monitor='val_loss',
-    patience=15,
+    patience=25,
     restore_best_weights=True
 )
 
 history = model.fit(
     final_x_train, y_train,
     validation_data=(final_x_val, y_valid),
-    epochs=15,       
+    epochs=250,       
     batch_size=64, 
     callbacks=[early_stop],     
     verbose=2
@@ -102,8 +102,8 @@ print(f"Test Accuracy: {test_accuracy:.4f}")
 print(f"Test Recall: {test_recall:.4f}")
 
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent
-model_path = BASE_DIR / "Diseases prediction model" / "backend" /"saved model" / "kidney model.joblib"
+model_path = BASE_DIR /"saved model" / "kidney model.joblib"
 joblib.dump(model, model_path)
 print(f"the model has saved in: {model_path}")
-joblib.dump(scaler, BASE_DIR / "Diseases prediction model" / "backend" / "saved model" / "kidney_scaler.joblib")
+joblib.dump(scaler, BASE_DIR/ "saved model" / "kidney_scaler.joblib")
 

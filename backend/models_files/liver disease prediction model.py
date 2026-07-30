@@ -33,18 +33,19 @@ final_x_val = scalingfortest(x_val ,scaled_cols ,scaler ,None)
 final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
 
 model = Sequential([
-    Dense(16 ,input_shape=(10,) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l1'),
-    Dropout(0.06),
-    Dense(8 ,input_shape=(16,) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l2'),
-    Dropout(0.04),
-    Dense(4 ,input_shape=(8,) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l3'),
+    Dense(16 ,input_shape=(10,) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l1'),
     Dropout(0.02),
-    Dense(1 ,input_shape=(4,) ,activation='sigmoid')
+    Dense(12 ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l2'),
+    Dropout(0.02),
+    Dense(8 ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l3'),
+    Dropout(0.02),
+    Dense(4 ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l4'),
+    Dropout(0.02),
+    Dense(1 ,activation='sigmoid' ,name='l5')
 ])
-
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-    loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+    loss=tf.keras.losses.BinaryCrossentropy(),
     metrics=['accuracy' , tf.keras.metrics.Recall()]
 )
 early_stop = EarlyStopping(
@@ -53,15 +54,15 @@ early_stop = EarlyStopping(
     restore_best_weights=True,
 )
 
-weights = compute_class_weight('balanced', classes=np.unique(Y), y=Y)
+weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
 weights = dict(enumerate(weights))
 history = model.fit(
-    final_x_train ,y_train ,
-    validation_data=(final_x_val ,y_val) ,
-    epochs=100 ,
+    final_x_train ,y_train,
+    validation_data=(final_x_val ,y_val),
+    epochs=250,
     class_weight=weights,
-    batch_size=16 ,
-    callbacks=[early_stop] ,
+    batch_size=64,
+    callbacks=[early_stop],
     verbose=2
 )
 
@@ -72,9 +73,9 @@ print(f"Test Accuracy : {test_accuracy:.4f}")
 print(f"Test Recall : {test_recall:.4f}")
 
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent
-model_path = BASE_DIR / "Diseases prediction model" / "backend" /"saved model" / "liver model.joblib"
+model_path = BASE_DIR /"saved model" / "liver model.joblib"
 joblib.dump(model, model_path)
 print(f"the model has saved in: {model_path}")
-joblib.dump(scaler, BASE_DIR / "Diseases prediction model" / "backend" / "saved model" / "liver_scaler.joblib")
+joblib.dump(scaler, BASE_DIR / "saved model" / "liver_scaler.joblib")
 
 

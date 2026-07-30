@@ -71,7 +71,7 @@ early_stop = EarlyStopping(
     restore_best_weights=True
 )
 
-weights = compute_class_weight('balanced', classes=np.unique(Y), y=Y)
+weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
 weights = dict(enumerate(weights))
 history = model.fit(
     final_x_train ,y_train ,
