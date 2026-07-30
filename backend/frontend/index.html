@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitals Panel - Multi-Model Risk Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="masthead">
+  <p class="eyebrow"><span class="dot"></span>Screening Console — Not a Diagnosis</p>
+  <h1 class="title">Multi-Model Risk Panel</h1>
+  <p class="subtitle">Select a chart, enter the patient's values, and run the model. Each panel maps to a dedicated screening model — heart attack, anemia, stroke, kidney disease, diabetes, and liver disease. Fields on each panel mirror the exact feature columns from its training dataset.</p>
+</header>
+
+<div class="ecg-wrap">
+  <svg class="ecg" viewBox="0 0 1000 46" preserveAspectRatio="none">
+    <path d="M0,23 L120,23 L145,23 L158,8 L172,40 L186,4 L200,23 L230,23 L520,23 L545,23 L558,8 L572,40 L586,4 L600,23 L630,23 L920,23 L945,23 L958,8 L972,40 L986,4 L1000,23"></path>
+  </svg>
+</div>
+
+<main>
+  <div class="tabs" id="tabs"></div>
+  <div class="chart-body" id="chartBody"></div>
+</main>
+
+<footer class="disclaimer">
+  <strong>Note:</strong> This tool does not replace clinical judgment or laboratory diagnosis.
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
