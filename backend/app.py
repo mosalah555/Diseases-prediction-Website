@@ -39,7 +39,8 @@ hyper_scaler = joblib.load(BASE_DIR / "hypertension_scaler.joblib")
 #sarting the app settings with flask
 BASE_DIR = pathlib.Path(__file__).resolve().parent        
 FRONTEND_DIR = BASE_DIR.parent / "frontend"               
-
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
 app = Flask(
     __name__,
     template_folder=str(FRONTEND_DIR),
