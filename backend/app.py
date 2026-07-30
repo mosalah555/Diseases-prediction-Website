@@ -45,11 +45,9 @@ app = Flask(
     static_folder=str(FRONTEND_DIR),
     static_url_path="/static"
 )
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-    @app.route("/") 
-    def index():
-        return render_template("index.html")
+@app.route("/") 
+def index():
+    return render_template("index.html")
 
 @app.route("/api/predict/heart", methods=["POST"])
 def heart_prediction():
@@ -536,7 +534,8 @@ def hypertension():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
 
 '''
 for start the web to work the :
