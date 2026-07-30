@@ -46,10 +46,10 @@ app = Flask(
     static_folder=str(FRONTEND_DIR),
     static_url_path="/static"
 )
-
+index = FRONTEND_DIR / "index.html"
 @app.route("/") 
 def index():
-    return render_template("index.html")
+    return render_template(index)
 
 @app.route("/api/predict/heart", methods=["POST"])
 def heart_prediction():
