@@ -1,3 +1,4 @@
+#importing initial libraries
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -11,7 +12,7 @@ from tensorflow.keras.regularizers import l2
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-
+#Defining the functions of the data preprocessing an scaling
 def scalingfortrain(x_inp , scaled_columns , scaler , unimportant_cols_todrop):
     if unimportant_cols_todrop is None:
         x_scaled = scaler.fit_transform( x_inp[scaled_columns] )
@@ -55,7 +56,7 @@ def replace_values_in_csv(df ,column_name ,value_0 ,value_1 ,value_2):
         df[column_name] = df[column_name].replace({value_0:0 ,value_1: 1,value_2: 2}).astype(int)
     return df[column_name]
 
-
+#Defining the function of calculating the advanced features of heart attack model
 def MAP(systolic_bp ,diastolic_bp):
     return  float(diastolic_bp) + (1/3) * (float(systolic_bp) - float(diastolic_bp))
 
@@ -126,6 +127,7 @@ def leveltext_predict(risk_score):
     else:
         level, level_text = "Normal", "Normal precentage"
     return level ,level_text
+#write the columns of each model input
 HEART_COLUMNS = [
     "age", "gender", "glucose_mg_dl", "cholesterol_mg_dl", "systolic_bp",
     "diastolic_bp", "heart_rate", "alcohol_consumption", "smoking",

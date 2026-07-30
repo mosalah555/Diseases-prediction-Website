@@ -15,7 +15,7 @@ from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
- 
+ #get the dataset from the device Note: you must to change it before work to the place of it on your device
 df = pd.read_csv("C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Diseases prediction model\\backend\\dataset\\diagnosed_cbc_data_v4.csv")
 print(df['Diagnosis'].value_counts())
 X = df.drop(columns=['Diagnosis'])
@@ -23,13 +23,15 @@ Y = df['Diagnosis']
 label_encoder = LabelEncoder()
 Y_encoded = label_encoder.fit_transform(Y)
 Y = to_categorical(Y_encoded ,num_classes=9)
+#Splitting the data
 x_train ,x_val ,x_test ,y_train ,y_val ,y_test = data_splitting(X ,Y ,0.75 ,0.15 ,0.1 ,42)
+#Scaling the data
 scaler = StandardScaler()
 scaled_cols = ['WBC' ,'LYMp' ,'NEUTp' ,'LYMn' ,'NEUTn' ,'RBC' ,'HGB' ,'HCT' ,'MCV' ,'MCH' ,'MCHC' ,'PLT' ,'PDW' ,'PCT']
 final_x_train = scalingfortrain(x_train ,scaled_cols ,scaler ,None)
 final_x_val = scalingfortest(x_val ,scaled_cols ,scaler ,None)
 final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
-
+#Defining the model
 model = Sequential([
     Dense(14 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l1'),
     Dropout(0.02),
@@ -49,6 +51,7 @@ early_stop = EarlyStopping(
     patience=30,
     restore_best_weights=True
 )
+#Training the model
 history = model.fit(
     final_x_train ,y_train,
     validation_data=(final_x_val ,y_val),
@@ -57,13 +60,13 @@ history = model.fit(
     callbacks=[early_stop],
     verbose=2
 )
-
+#try the model on the test data
 print("Model Evaluation on test data :   ")
 test_loss ,test_accuracy ,test_recall = model.evaluate(final_x_test ,y_test)
 print(f"Test Loss : {test_loss:.4f}")
 print(f"Test Accuracy : {test_accuracy:.4f}")
 print(f"Test Recall : {test_recall:.4f}")
-
+#Saving the model
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent 
 model_path = BASE_DIR   / "saved model" / "anemia model.joblib"
 joblib.dump(model ,model_path)

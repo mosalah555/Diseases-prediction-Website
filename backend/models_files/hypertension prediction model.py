@@ -15,8 +15,9 @@ from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+#get the dataset from the device Note: you must to change it before work to the place of it on your device
 df = pd.read_csv("C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Diseases prediction model\\backend\\dataset\\hypertension_dataset.csv")
-
+#Replacing the strings values to numbers 0/1/2 
 df['BP_History'] = replace_values_in_csv(df ,'BP_History' ,"Normal" ,"Prehypertension" ,"Hypertension")
 df['Family_History'] = replace_values_in_csv(df ,'Family_History' ,"No" ,"Yes" ,None)
 df['Exercise_Level'] = replace_values_in_csv(df ,'Exercise_Level' ,"Low" ,"Moderate" ,"High")
@@ -31,7 +32,7 @@ medication_map = {
 df['Medication'] = df['Medication'].fillna("None")
 df['Medication'] = df['Medication'].map(medication_map).astype(int)
 df['Has_Hypertension'] = replace_values_in_csv(df ,'Has_Hypertension' ,"No" ,"Yes" ,None)
-
+#Defining X and Y,Splitting the data and Scaling it
 X = df.drop(columns=['Has_Hypertension'])
 Y = df['Has_Hypertension']
 x_train ,x_val ,x_test ,y_train ,y_val ,y_test = data_splitting(X ,Y ,0.07 ,0.2 ,0.1 ,42)
@@ -40,7 +41,7 @@ scaler = StandardScaler()
 final_x_train = scalingfortrain(x_train ,scaled_cols ,scaler ,None)
 final_x_val = scalingfortest(x_val ,scaled_cols ,scaler ,None)
 final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
- 
+ #Defining the model 
 model = Sequential([
     Dense(10 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l1'),
     Dropout(0.02),
@@ -52,6 +53,7 @@ model = Sequential([
     Dropout(0.02),
     Dense(1 ,activation='sigmoid' ,name='l5')
 ])
+#Training the Model
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
     loss=tf.keras.losses.BinaryCrossentropy(),
@@ -73,11 +75,13 @@ history = model.fit(
     callbacks=[early_stop],
     verbose=2
 )
+#try the model on the test data
 print("Model Evaluation on test data :   ")
 test_loss ,test_accuracy ,test_recall = model.evaluate(final_x_test ,y_test)
 print(f"Test Loss : {test_loss:.4f}")
 print(f"Test Accuracy : {test_accuracy:.4f}")
 print(f"Test Recall : {test_recall:.4f}")
+#Saving the model
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent 
 model_path = BASE_DIR   / "saved model" / "hypertension model.joblib"
 joblib.dump(model ,model_path)

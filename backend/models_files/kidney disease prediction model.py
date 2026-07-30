@@ -23,8 +23,9 @@ low = 0, moderate = 1, high = 2
 no_disease = 0
 
 '''
+#get the dataset from the device Note: you must to change it before work to the place of it on your device
 df = pd.read_csv("C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Diseases prediction model\\backend\\dataset\\kidney_disease_dataset.csv")
-
+#Replacing the strings values to 0/1/2
 df['Red blood cells in urine'] = replace_values_in_csv(df ,'Red blood cells in urine' ,"normal" ,"abnormal" ,value_2=None)
 df['Pus cells in urine'] = replace_values_in_csv(df ,'Pus cells in urine' ,"normal" ,"abnormal" ,value_2=None)
 df['Pus cell clumps in urine'] = replace_values_in_csv(df ,'Pus cell clumps in urine' ,"not present" ,"present" ,value_2=None)
@@ -49,7 +50,7 @@ risk_mapping = {
     }
 
 df["Target"] = df["Target"].replace(risk_mapping).astype(int)
-
+#Defining X and Y ,and Scaling the datasets of training and testing and validation
 X = df.drop(columns=['Target'])
 Y = df['Target']
 x_train ,x_valid ,x_test ,y_train ,y_valid ,y_test = data_splitting(X ,Y ,0.7 ,0.2 ,0.1 ,42)
@@ -62,7 +63,7 @@ Y_train_forWeight = y_train
 y_train = to_categorical(y_train, num_classes=3)
 y_valid = to_categorical(y_valid, num_classes=3)
 y_test  = to_categorical(y_test, num_classes=3)
-
+#Defining the model 
 model = Sequential([
     Dense(45, input_shape=(42,) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l1'),
     Dropout(0.06),
@@ -73,7 +74,7 @@ model = Sequential([
     Dense(3 ,input_shape=(15,) ,activation='softmax')
 ])
 
-
+#put Settings of model Training and training it
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
     loss=tf.keras.losses.CategoricalCrossentropy(from_logits=False), 
@@ -94,13 +95,13 @@ history = model.fit(
     callbacks=[early_stop],     
     verbose=2
 )
-
+#Try the model on test data
 print("Model evaluation on test data:")
 test_loss, test_accuracy, test_recall = model.evaluate(final_x_test, y_test)
 print(f"Test Loss: {test_loss:.4f}")
 print(f"Test Accuracy: {test_accuracy:.4f}")
 print(f"Test Recall: {test_recall:.4f}")
-
+#Saving the model
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent
 model_path = BASE_DIR /"saved model" / "kidney model.joblib"
 joblib.dump(model, model_path)

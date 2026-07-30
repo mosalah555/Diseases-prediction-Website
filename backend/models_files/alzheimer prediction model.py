@@ -15,16 +15,18 @@ from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
- 
+ #get the dataset from the device Note: you must to change it before work to the place of it on your device
 df = pd.read_csv("C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Diseases prediction model\\backend\\dataset\\alzheimers_disease_data.csv")
 X = df.drop(columns=['Diagnosis'])
 Y = df['Diagnosis']
+#Scaling the data and Splitting it
 scaled_cols = ['Age' ,'Ethnicity' ,'EducationLevel' ,'BMI','AlcoholConsumption' ,'PhysicalActivity' ,'DietQuality' ,'SleepQuality' ,'SystolicBP' ,'DiastolicBP' ,'CholesterolTotal' ,'CholesterolLDL' ,'CholesterolHDL' ,'CholesterolTriglycerides' ,'MMSE' ,'FunctionalAssessment' ,'ADL']
 x_train ,x_val ,x_test ,y_train ,y_val ,y_test = data_splitting(X ,Y, 0.8, 0.1, 0.1, 42)
 scaler = StandardScaler()
 final_x_train = scalingfortrain(x_train ,scaled_cols ,scaler ,None)
 final_x_val = scalingfortest(x_val ,scaled_cols ,scaler ,None)
 final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
+#Defining the model
 model = Sequential([
     Dense(32 ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l1'),
     Dropout(0.02),
@@ -44,6 +46,7 @@ early_stop = EarlyStopping(
     patience=30,
     restore_best_weights=True
 )
+#Training the model on the test data
 weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
 weights = dict(enumerate(weights))
 history = model.fit(
@@ -55,13 +58,13 @@ history = model.fit(
     callbacks=[early_stop],
     verbose=2
 )
-
+#Try the model on the test data
 print("Model Evaluation on test data :   ")
 test_loss ,test_accuracy ,test_recall = model.evaluate(final_x_test ,y_test)
 print(f"Test Loss : {test_loss:.4f}")
 print(f"Test Accuracy : {test_accuracy:.4f}")
 print(f"Test Recall : {test_recall:.4f}")
-
+#Saving the model
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent 
 model_path = BASE_DIR   / "saved model" / "alzheimer model.joblib"
 joblib.dump(model ,model_path)

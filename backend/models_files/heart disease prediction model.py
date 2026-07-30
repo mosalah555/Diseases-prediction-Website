@@ -12,7 +12,7 @@ from tensorflow.keras.regularizers import l2
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-
+#get the dataset from the device Note: you must to change it before work to the place of it on your device
 df = pd.read_csv("C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Diseases prediction model\\backend\\dataset\\disease_prediction _edited.csv")
 X = df.drop(columns=["result"])
 Y = df["result"]
@@ -25,10 +25,11 @@ Y = df["result"]
           medium = 1
           high = 2
 """
+#splitting the data
 random_state = 42
 x_train ,x_valid ,x_test ,y_train ,y_valid ,y_test = utils.data_splitting(X ,Y ,0.8 ,0.1 ,0.1 ,random_state=random_state)
 
-
+#Scaaling the data
 scaler = StandardScaler()
 scaled_columns = ['age', 'glucose_mg_dl', 'cholesterol_mg_dl', 'systolic_bp', 'diastolic_bp', 'bmi', 'MAP', 'RPP Rate Pressure Product', 'PP Pulse Pressure', 'Atherogenic Index Coefficient', 'Smoking-Hypertension Interaction', 'Cardiac Adiposity Proxy', 'Cardiovascular Stress Index']
 unimportant_cols = ["gender" , "alcohol_consumption" , "heart_rate"]
@@ -36,7 +37,7 @@ final_x_train = utils.scalingfortrain(x_train , scaled_columns , scaler ,unimpor
 final_x_val = utils.scalingfortest(x_valid , scaled_columns , scaler ,unimportant_cols)
 final_x_test = utils.scalingfortest(x_test , scaled_columns , scaler ,unimportant_cols)
 
-
+#Defining the model
 model = Sequential([
     Dense(64 , activation='relu' ,kernel_regularizer=l2(0.01)),
     Dropout(0.02),
@@ -59,7 +60,7 @@ early_stop = EarlyStopping(
     patience=20,
     restore_best_weights=True
 )
-
+#Training the model
 history = model.fit(
     final_x_train, y_train,
     validation_data=(final_x_val, y_valid),
@@ -68,14 +69,13 @@ history = model.fit(
     callbacks=[early_stop],     
     verbose=1
 )
-
+#Try the model on test data
 print("Model evaluation on test data:")
 test_loss, test_accuracy, test_recall = model.evaluate(final_x_test, y_test)
 print(f"Test Loss: {test_loss:.4f}")
 print(f"Test Accuracy: {test_accuracy:.4f}")
 print(f"Test Recall: {test_recall:.4f}")
-
-
+#Saving the model
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent
 model_path = BASE_DIR /"saved model" / "heart model.joblib"
 joblib.dump(model, model_path)

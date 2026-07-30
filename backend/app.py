@@ -1,3 +1,4 @@
+#impoting the libraries 
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import joblib
@@ -5,7 +6,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 from models_files.utils import *
-
+#importing the models and scalers of it
 BASE_DIR = pathlib.Path(__file__).resolve().parent / "saved model"
 
 heart_model = joblib.load(BASE_DIR / "heart model.joblib")
@@ -35,7 +36,7 @@ chronic_scaler = joblib.load(BASE_DIR / "chronic_scaler.joblib")
 
 hyper_model = joblib.load(BASE_DIR / "hypertension model.joblib")
 hyper_scaler = joblib.load(BASE_DIR / "hypertension_scaler.joblib")
-
+#sarting the app settings with flask
 BASE_DIR = pathlib.Path(__file__).resolve().parent        
 FRONTEND_DIR = BASE_DIR.parent / "frontend"               
 
@@ -45,7 +46,7 @@ app = Flask(
     static_folder=str(FRONTEND_DIR),
     static_url_path="/static"
 )
-
+#APIs functions 
 @app.route("/") 
 def index():
     return render_template("index.html")
@@ -538,7 +539,7 @@ def hypertension():
 
 
 '''
-to work the :
+for start the web to work the :
 
 cd backend
 $env:FLASK_DEBUG = "1"
