@@ -39,14 +39,12 @@ hyper_scaler = joblib.load(BASE_DIR / "hypertension_scaler.joblib")
 #sarting the app settings with flask
 BASE_DIR = pathlib.Path(__file__).resolve().parent        
 FRONTEND_DIR = BASE_DIR.parent / "frontend"               
-
 app = Flask(
     __name__,
     template_folder=str(FRONTEND_DIR),
     static_folder=str(FRONTEND_DIR),
     static_url_path="/static"
 )
-#APIs functions 
 @app.route("/") 
 def index():
     return render_template("index.html")
@@ -536,7 +534,8 @@ def hypertension():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
 
 '''
 for start the web to work the :
