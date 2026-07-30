@@ -27,15 +27,24 @@ anemia_model = joblib.load(BASE_DIR / "anemia model.joblib")
 anemia_encoder = joblib.load(BASE_DIR / "anemia_encoder.joblib")
 anemia_scaler = joblib.load(BASE_DIR / "anemia_scaler.joblib")
 
-BASE_DIR_FLASK = pathlib.Path(__file__).resolve().parent  
-FRONTEND_DIR = BASE_DIR_FLASK.parent / "frontend"                
+alzheimer_model = joblib.load(BASE_DIR / "alzheimer model.joblib")
+alzheimer_scaler = joblib.load(BASE_DIR / "alzheimer_scaler.joblib")
+
+chronic_model = joblib.load(BASE_DIR / "chronic model.joblib")
+chronic_scaler = joblib.load(BASE_DIR / "chronic_scaler.joblib")
+
+hyper_model = joblib.load(BASE_DIR / "hypertension model.joblib")
+hyper_scaler = joblib.load(BASE_DIR / "hypertension_scaler.joblib")
+
+BASE_DIR = pathlib.Path(__file__).resolve().parent        
+FRONTEND_DIR = BASE_DIR.parent / "frontend"               
+
 app = Flask(
     __name__,
-    template_folder=str(FRONTEND_DIR),  
-    static_folder=str(FRONTEND_DIR),      
+    template_folder=str(FRONTEND_DIR),
+    static_folder=str(FRONTEND_DIR),
     static_url_path="/static"
 )
-CORS(app)
 
 @app.route("/") 
 def index():
@@ -414,8 +423,120 @@ def liver_prediction():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/api/predict/alzheimer" ,methods=["Post"])
+def alzheimer_prediction():
+    try:
+        values = request.get_json(silent=True) or {}
+        values = dict(values)
+        cols = ALZHEIMER_COLUMNS
+        ordered_row = []
+        for col in cols:
+            if col not in values:
+                return jsonify({"error": f"Missing value : {col}"}),400
+            ordered_row.append(values[col])
+        input_df = pd.DataFrame([ordered_row], columns=cols)
+        input_df = input_df.apply(pd.to_numeric, errors="coerce")
+        input_df = input_df.astype(np.float32)
+        scaled_cols = ['Age' ,'Ethnicity' ,'EducationLevel' ,'BMI','AlcoholConsumption' ,'PhysicalActivity' ,'DietQuality' ,'SleepQuality' ,'SystolicBP' ,'DiastolicBP' ,'CholesterolTotal' ,'CholesterolLDL' ,'CholesterolHDL' ,'CholesterolTriglycerides' ,'MMSE' ,'FunctionalAssessment' ,'ADL']
+        final_input = scalingfortest(input_df ,scaled_cols ,alzheimer_scaler ,None)
+        proba = float(alzheimer_model.predict(final_input ,verbose=0)[0][0])
+        risk_score = proba * 100
+        confidence_pct = round((proba if proba >=0.5 else (1 - proba)) * 100 ,1)
+        message ,recommendation = riskscore_messege(risk_score)
+        level ,level_text = leveltext_predict(risk_score) 
+        return jsonify({
+            "riskScore": risk_score,
+            "level": level,
+            "levelText": level_text,
+            "detail": message,
+            "message": message,
+            "recommendation": recommendation,
+            "confidencePct": confidence_pct,
+            "predictedLabel": risk_score
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
-    
+@app.route("/api/predict/chronic_kidney" ,methods=["Post"])
+def chronic_kidney():
+    try:
+        values = request.get_json(silent=True) or {}
+        values = dict(values)
+        cols = CHRONIC_KIDNEY_COLUMNS
+        ordered_row = []
+        for col in cols:
+            if col not in values:
+                return jsonify({"error": f"Missing value : {col}"}),400
+            ordered_row.append(values[col])
+        input_df = pd.DataFrame([ordered_row], columns=cols)
+        input_df = input_df.apply(pd.to_numeric, errors="coerce")
+        input_df = input_df.astype(np.float32)
+        scaled_cols = ['Bp' ,'Sg' ,'Al' ,'Su' ,'Pot', 'Bu' ,'Sc' ,'Sod' ,'Hemo' ,'Wbcc' ,'Rbcc']
+        final_input = scalingfortest(input_df ,scaled_cols ,chronic_scaler ,None)
+        proba = float(chronic_model.predict(final_input ,verbose=0)[0][0])
+        risk_score = proba * 100
+        confidence_pct = round((proba if proba >=0.5 else (1 - proba)) * 100 ,1)
+        message ,recommendation = riskscore_messege(risk_score)
+        level ,level_text = leveltext_predict(risk_score)
+        return jsonify({
+            "riskScore": risk_score,
+            "level": level,
+            "levelText": level_text,
+            "detail": message,
+            "message": message,
+            "recommendation": recommendation,
+            "confidencePct": confidence_pct,
+            "predictedLabel": risk_score
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/predict/hypertension" ,methods=["Post"])
+def hypertension():
+    try:
+        values = request.get_json(silent=True) or {}
+        values = dict(values)
+        cols = HYPERTENSION_COLUMNS
+        ordered_row = []
+        for col in cols:
+            if col not in values:
+                return jsonify({"error": f"Missing value : {col}"}),400
+            ordered_row.append(values[col])
+        input_df = pd.DataFrame([ordered_row], columns=cols)
+        medication_map = {
+            "ACE Inhibitor": 0,
+            "Beta Blocker": 1,
+            "Diuretic": 2,
+            "Other": 3,
+            "None": 4,    
+        }
+        input_df['BP_History'] = replace_values_in_csv(input_df ,'BP_History' ,"Normal" ,"Prehypertension" ,"Hypertension")
+        input_df['Exercise_Level'] = replace_values_in_csv(input_df ,'Exercise_Level' ,"Low" ,"Moderate" ,"High")
+        input_df['Family_History'] = replace_values_in_csv(input_df ,'Family_History' ,"NO" ,"Yes" ,None)
+        input_df['Smoking_Status'] = replace_values_in_csv(input_df ,'Smoking_Status' ,"Non-Smoker" ,"Smoker" ,None)
+        input_df['Medication'] = input_df['Medication'].map(medication_map).astype(int)
+        scaled_cols = ['Age' ,'Salt_Intake' ,'Stress_Score' ,'BP_History' ,'Sleep_Duration' ,'BMI' ,'Medication' ,'Exercise_Level']
+        final_input = scalingfortest(input_df ,scaled_cols ,hyper_scaler ,None)
+        proba = float(hyper_model.predict(final_input ,verbose=0)[0][0])
+        risk_score = proba * 100
+        confidence_pct = round((proba if proba >=0.5 else (1 - proba)) * 100 ,1)
+        message ,recommendation = riskscore_messege(risk_score)
+        level ,level_text = leveltext_predict(risk_score)
+        return jsonify({
+            "riskScore": risk_score,
+            "level": level,
+            "levelText": level_text,
+            "detail": message,
+            "message": message,
+            "recommendation": recommendation,
+            "confidencePct": confidence_pct,
+            "predictedLabel": risk_score
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 '''
 to work the :
 

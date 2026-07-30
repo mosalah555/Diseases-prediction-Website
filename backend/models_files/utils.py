@@ -176,4 +176,23 @@ reverse_risk_mapping = {  # that for kidney output
     1: "Moderate Risk",
     2: "High Risk (High Risk / Severe Disease)",
 }
+ALZHEIMER_COLUMNS = [
+    'Age', 'Gender', 'Ethnicity', 'EducationLevel', 'BMI', 'Smoking',
+    'AlcoholConsumption', 'PhysicalActivity', 'DietQuality', 'SleepQuality',
+    'FamilyHistoryAlzheimers', 'CardiovascularDisease', 'Diabetes', 'Depression',
+    'HeadInjury', 'Hypertension', 'SystolicBP', 'DiastolicBP', 'CholesterolTotal',
+    'CholesterolLDL', 'CholesterolHDL', 'CholesterolTriglycerides', 'MMSE',
+    'FunctionalAssessment', 'MemoryComplaints', 'BehavioralProblems', 'ADL',
+    'Confusion', 'Disorientation', 'PersonalityChanges',
+    'DifficultyCompletingTasks', 'Forgetfulness'
+]
+
+CHRONIC_KIDNEY_COLUMNS = [
+    'Bp', 'Sg', 'Al', 'Su', 'Rbc', 'Bu', 'Sc', 'Sod', 'Pot', 'Hemo', 'Wbcc', 'Rbcc', 'Htn'
+]
+
+HYPERTENSION_COLUMNS = [
+    'Age', 'Salt_Intake', 'Stress_Score', 'BP_History', 'Sleep_Duration', 'BMI',
+    'Medication', 'Family_History', 'Exercise_Level', 'Smoking_Status'
+]
     

@@ -16,31 +16,26 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
  
-df = pd.read_csv("C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Diseases prediction model\\backend\\dataset\\diagnosed_cbc_data_v4.csv")
-print(df['Diagnosis'].value_counts())
+df = pd.read_csv("C:\\Users\\Ahmed Salah\\Desktop\\private MO\\programming\\projects\\ML-DL projects\\Diseases prediction model\\backend\\dataset\\alzheimers_disease_data.csv")
 X = df.drop(columns=['Diagnosis'])
 Y = df['Diagnosis']
-label_encoder = LabelEncoder()
-Y_encoded = label_encoder.fit_transform(Y)
-Y = to_categorical(Y_encoded ,num_classes=9)
-x_train ,x_val ,x_test ,y_train ,y_val ,y_test = data_splitting(X ,Y ,0.75 ,0.15 ,0.1 ,42)
+scaled_cols = ['Age' ,'Ethnicity' ,'EducationLevel' ,'BMI','AlcoholConsumption' ,'PhysicalActivity' ,'DietQuality' ,'SleepQuality' ,'SystolicBP' ,'DiastolicBP' ,'CholesterolTotal' ,'CholesterolLDL' ,'CholesterolHDL' ,'CholesterolTriglycerides' ,'MMSE' ,'FunctionalAssessment' ,'ADL']
+x_train ,x_val ,x_test ,y_train ,y_val ,y_test = data_splitting(X ,Y, 0.8, 0.1, 0.1, 42)
 scaler = StandardScaler()
-scaled_cols = ['WBC' ,'LYMp' ,'NEUTp' ,'LYMn' ,'NEUTn' ,'RBC' ,'HGB' ,'HCT' ,'MCV' ,'MCH' ,'MCHC' ,'PLT' ,'PDW' ,'PCT']
 final_x_train = scalingfortrain(x_train ,scaled_cols ,scaler ,None)
 final_x_val = scalingfortest(x_val ,scaled_cols ,scaler ,None)
 final_x_test = scalingfortest(x_test ,scaled_cols ,scaler ,None)
-
 model = Sequential([
-    Dense(14 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l1'),
+    Dense(32 ,input_shape=(final_x_train.shape[1],) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l1'),
     Dropout(0.02),
-    Dense(12 ,input_shape=(14,) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l2'),
+    Dense(16 ,input_shape=(32,) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l2'),
     Dropout(0.02),
-    Dense(10 ,input_shape=(12,) ,activation='relu' ,kernel_regularizer=l2(0.001) ,name='l3'),
+    Dense(8 ,input_shape=(16,) ,activation='relu' ,kernel_regularizer=l2(0.01) ,name='l3'),
     Dropout(0.02),
-    Dense(9 ,input_shape=(10,) ,activation='softmax' ,name='l5')
+    Dense(1 ,input_shape=(8,) ,activation='sigmoid')
 ])
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.005),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
     loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
     metrics=['accuracy' ,tf.keras.metrics.Recall()]
 )
@@ -52,9 +47,9 @@ early_stop = EarlyStopping(
 weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
 weights = dict(enumerate(weights))
 history = model.fit(
-    final_x_train ,y_train,
+    final_x_train ,y_train ,
     validation_data=(final_x_val ,y_val),
-    epochs=750,
+    epochs=250,
     class_weight=weights,
     batch_size=64,
     callbacks=[early_stop],
@@ -68,8 +63,6 @@ print(f"Test Accuracy : {test_accuracy:.4f}")
 print(f"Test Recall : {test_recall:.4f}")
 
 BASE_DIR = pathlib.Path("Diseases prediction model").resolve().parent.parent 
-model_path = BASE_DIR   / "saved model" / "anemia model.joblib"
+model_path = BASE_DIR   / "saved model" / "alzheimer model.joblib"
 joblib.dump(model ,model_path)
-joblib.dump(scaler ,BASE_DIR / "saved model" / "anemia_scaler.joblib")
-joblib.dump(label_encoder ,BASE_DIR / "saved model" / "anemia_encoder.joblib")
-
+joblib.dump(scaler ,BASE_DIR / "saved model" / "alzheimer_scaler.joblib")
