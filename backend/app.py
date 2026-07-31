@@ -5,6 +5,7 @@ import joblib
 import pathlib 
 import numpy as np
 import pandas as pd
+import os
 from models_files.utils import *
 #importing the models and scalers of it
 BASE_DIR = pathlib.Path(__file__).resolve().parent / "saved model"
@@ -37,24 +38,28 @@ chronic_scaler = joblib.load(BASE_DIR / "chronic_scaler.joblib")
 hyper_model = joblib.load(BASE_DIR / "hypertension model.joblib")
 hyper_scaler = joblib.load(BASE_DIR / "hypertension_scaler.joblib")
 #sarting the app settings with flask
-FRONTEND_DIR = pathlib.Path(__file__).resolve().parent / "frontend"
-
+FRONTEND_DIR = pathlib.Path(__file__).resolve().parent 
+index_path =  FRONTEND_DIR / "index.html"
+if index_path.exits():
+    with open(index_path, 'r' ,encoding='utf-8') as file:
+        html = file.read()
+    print("success")
+else:
+    print(f"the file not in : {index_path}")
 app = Flask(
     __name__,
     template_folder=str(FRONTEND_DIR),
     static_folder=str(FRONTEND_DIR),
     static_url_path="/static"
 )
-index = FRONTEND_DIR / "index.html"
-with open("index.html", "r" ,emcoding="utf-8") as file:
-    html_content = file.read()
-    print(html_content)
+
+
 @app.route("/") 
 def index():
-    return render_template(html_content)
+    return render_template(html)
 
 @app.route("/api/predict/heart", methods=["POST"])
-def heart_prediction():
+def heart_predictio.n():
     try:
         values = request.get_json(silent=True) or {}
         systolic_bp = float(values["systolic_bp"])
