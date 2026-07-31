@@ -56,7 +56,7 @@ app = Flask(
 
 @app.route("/") 
 def index():
-    return render_template(html)
+    return render_template(FRONTEND_DIR) ,print(FRONTEND_DIR)
 
 @app.route("/api/predict/heart", methods=["POST"])
 def heart_predictio.n():
