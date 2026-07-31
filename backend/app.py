@@ -40,7 +40,7 @@ hyper_scaler = joblib.load(BASE_DIR / "hypertension_scaler.joblib")
 #sarting the app settings with flask
 FRONTEND_DIR = pathlib.Path(__file__).resolve().parent 
 index_path =  FRONTEND_DIR / "index.html"
-if index_path.exits():
+if index_path.exists():
     with open(index_path, 'r' ,encoding='utf-8') as file:
         html = file.read()
     print("success")
@@ -56,8 +56,8 @@ app = Flask(
 
 @app.route("/") 
 def index():
-    print(FRONTEND_DIR)
-    return render_template(FRONTEND_DIR)
+    print(pathlib.Path(__file__).resolve.parent())
+    return render_template("html.index")
 
 @app.route("/api/predict/heart", methods=["POST"])
 def heart_prediction():
