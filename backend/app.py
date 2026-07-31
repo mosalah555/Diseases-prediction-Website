@@ -5,7 +5,6 @@ import joblib
 import pathlib 
 import numpy as np
 import pandas as pd
-import os
 from models_files.utils import *
 #importing the models and scalers of it
 BASE_DIR = pathlib.Path(__file__).resolve().parent / "saved model"
@@ -39,25 +38,18 @@ hyper_model = joblib.load(BASE_DIR / "hypertension model.joblib")
 hyper_scaler = joblib.load(BASE_DIR / "hypertension_scaler.joblib")
 #sarting the app settings with flask
 FRONTEND_DIR = pathlib.Path(__file__).resolve().parent 
-index_path =  FRONTEND_DIR / "index.html"
-if index_path.exists():
-    with open(index_path, 'r' ,encoding='utf-8') as file:
-        html = file.read()
-    print("success")
-else:
-    print(f"the file not in : {index_path}")
+
 app = Flask(
     __name__,
     template_folder=str(FRONTEND_DIR),
     static_folder=str(FRONTEND_DIR),
-    static_url_path="/static"
+    static_url_path="static"
 )
 
 
 @app.route("/") 
 def index():
-    print(pathlib.Path(__file__).resolve.parent())
-    return render_template("html.index")
+    return render_template("index.html")
 
 @app.route("/api/predict/heart", methods=["POST"])
 def heart_prediction():
@@ -544,8 +536,6 @@ def hypertension():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
 
 '''
 for start the web to work the :
