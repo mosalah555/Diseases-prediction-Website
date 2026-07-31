@@ -46,9 +46,12 @@ app = Flask(
     static_url_path="/static"
 )
 index = FRONTEND_DIR / "index.html"
+with open("index.html", "r" ,emcoding="utf-8") as file:
+    html_content = file.read()
+    print(html_content)
 @app.route("/") 
 def index():
-    return render_template(index)
+    return render_template(html_content)
 
 @app.route("/api/predict/heart", methods=["POST"])
 def heart_prediction():
