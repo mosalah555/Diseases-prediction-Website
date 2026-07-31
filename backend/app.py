@@ -56,10 +56,11 @@ app = Flask(
 
 @app.route("/") 
 def index():
-    return render_template(FRONTEND_DIR) ,print(FRONTEND_DIR)
+    print(FRONTEND_DIR)
+    return render_template(FRONTEND_DIR)
 
 @app.route("/api/predict/heart", methods=["POST"])
-def heart_predictio.n():
+def heart_prediction():
     try:
         values = request.get_json(silent=True) or {}
         systolic_bp = float(values["systolic_bp"])
