@@ -131,4 +131,8 @@ Diseases prediction model/
 
 ## License
 
-See `LICENSE` file in the repository.
+See `LICENSE` file in the repo<img width="1920" height="1020" alt="Screenshot 2026-07-31 161710" src="https://github.com/user-attachments/assets/4fc2f81a-7cf2-48f8-a7c6-6d65f8809c0a" />
+<img width="1920" height="1020" alt="Screenshot 2026-07-31 161451" src="https://github.com/user-attachments/assets/f171b0cc-155b-4a32-8ced-be7e58da25b0" />
+<img width="1920" height="1020" alt="Screenshot 2026-07-31 161413" src="https://github.com/user-attachments/assets/056b027e-13d1-4891-a11c-42597c7d57d5" />
+sitory.
+
