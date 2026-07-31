@@ -1,30 +1,30 @@
 ##Multi disease prediction web app
-This web app work with Flask or streamlit by two diffrent files flask_app.py or st_app.py.
-The app contains 9 models for predict 9 different diseases and when click predict button the output return in (confidence percentage / risk percentage / the prediction(low risk / high risk) / message from the indicator with predicts but in text / the type of disease(This is only in the model of anemia and say the type of anemia from 8 types)):
-1_Heart disease model:
-_classification /Binary
-_output: Low risk / High risk
-2_Anemia disease model:
-_softmax (multi output)
-_Healthy / types of anemia
-3_stroke disease model:
-_classification / binary
-_output: Low risk / High risk
-4_kidney disease model:
-_softmax (multi output)
-_output: Low risk / Moderate risk / High risk
-5_Diabetes prediction model:
-_classification / binary
-6_Liver disease model:
-_classification / binary
-7_Hypertension disease model:
-_classification / binary
-8_chronic kidney disease model:
-_classification /binary
-9_Alzheimer disease model:
-_classification / binary
+#This web app work with Flask or streamlit by two diffrent files flask_app.py or st_app.py./n
+The app contains 9 models for predict 9 different diseases and when click predict button the output return in (confidence percentage / risk percentage / the prediction(low risk / high risk) / message from the indicator with predicts but in text / the type of disease(This is only in the model of anemia and say the type of anemia from 8 types)):/n
+1_Heart disease model:/n
+_classification /Binary/n
+_output: Low risk / High risk/n
+2_Anemia disease model:/n
+_softmax (multi output)/n
+_Healthy / types of anemia/n
+3_stroke disease model:/n
+_classification / binary/n
+_output: Low risk / High risk/n
+4_kidney disease model:/n
+_softmax (multi output)/n
+_output: Low risk / Moderate risk / High risk/n
+5_Diabetes prediction model:/n
+_classification / binary/n
+6_Liver disease model:/n
+_classification / binary/n
+7_Hypertension disease model:/n
+_classification / binary/n
+8_chronic kidney disease model:/n
+_classification / binary/n
+9_Alzheimer disease model:/n
+_classification / binary/n
 ## AI Contribution in the development process
-1_suggestion in training models process
+1_suggestion in training models process/n
 2_Making the frontend folder for flask and contribute in making st_app.py ""Note :All logic From my developing and ai didn't contribute in the logic and the core of the app
 
 | # | Model | Test Accuracy | Test Recall | Test Loss |
