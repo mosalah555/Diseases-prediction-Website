@@ -137,6 +137,7 @@ if page == "Heart":
             alcohol_consumption = st.number_input("Alcohol consumption (units/week)", 0.0, 50.0, 2.0)
             physical_activity = st.number_input("Physical activity (hrs/week)", 0.0, 40.0, 3.0)
             bmi = st.number_input("BMI", 10.0, 60.0, 24.0)
+            family_history = st.selectbox("Family_history", [0, 1], format_func=lambda x: "Yes" if x else "No")
  
         submitted = st.form_submit_button("Predict")
  
@@ -145,15 +146,16 @@ if page == "Heart":
             values = {
                 "age": age,
                 "gender": 1 if gender == "Male" else 0,
+                "glucose_mg_dl": glucose_mg_dl,
+                "cholesterol_mg_dl": cholesterol_mg_dl,
                 "systolic_bp": systolic_bp,
                 "diastolic_bp": diastolic_bp,
                 "heart_rate": heart_rate,
-                "glucose_mg_dl": glucose_mg_dl,
-                "cholesterol_mg_dl": cholesterol_mg_dl,
-                "smoking": smoking,
                 "alcohol_consumption": alcohol_consumption,
-                "physical_activity": physical_activity,
+                "smoking": smoking,
                 "bmi": bmi,
+                "physical_activity": physical_activity,
+                "family_history": family_history,
             }
  
             Map = MAP(systolic_bp, diastolic_bp)
