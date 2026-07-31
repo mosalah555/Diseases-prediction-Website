@@ -87,6 +87,7 @@ Content-Type: application/json
 1_Used to make suggestions to improve the models training process
 2_helped me in the pathes
 3_Helped me in some error analysis and fixing
+4_Helped me in making st_app.py from the flask_app.py that i have made by my hand
 ##Note :
 ALL THE LOGIC OF THE APP IS FROM MY MADE 
 ## Tech stack
