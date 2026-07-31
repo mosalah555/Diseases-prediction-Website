@@ -11,7 +11,7 @@ A full-stack web application that screens for **8 different health conditions** 
 Pick a condition from the tab bar, fill in the patient's values (or click "Fill sample values" to autofill a realistic example), and run the model. Each tab's form fields map 1:1 to the exact feature columns of that model's training dataset — nothing is guessed or reformatted on the way in.
 
 The backend runs the real trained model for every request and returns a risk score, a plain-language message, a recommendation, and — for the two multi-class models — a specific predicted diagnosis label.
-
+it can work with flask by flask_app.py or with streamlit by st_app.py
 ---
 
 ## Models included
@@ -83,7 +83,12 @@ Content-Type: application/json
 `model_id` is one of: `heart`, `anemia`, `stroke`, `kidney`, `diabetes`, `liver`, `hypertension`, `chronic_kidney`.
 
 ---
-
+##AI USES IN THE APP
+1_Used to make suggestions to improve the models training process
+2_helped me in the pathes
+3_Helped me in some error analysis and fixing
+##Note :
+ALL THE LOGIC OF THE APP IS FROM MY MADE 
 ## Tech stack
 
 - **Backend:** Python, Flask, TensorFlow/Keras, scikit-learn, pandas, NumPy, joblib
